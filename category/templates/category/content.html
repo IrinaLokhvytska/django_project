@@ -7,7 +7,7 @@
         <div class="col-sm" id="category">
         <div class="card" style="width: 18rem;">
             {% load static %}
-            <img class="card-img-top" src="" alt="Card image cap">
+            <img class="card-img-top" src="{{category.image}}" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">{{category.name | upper}}</h5>
                 <p class="card-text">{{category.description | truncatechars:50}}</p>
