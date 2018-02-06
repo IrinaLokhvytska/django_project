@@ -16,6 +16,9 @@ class Question(models.Model):
     description = models.TextField()
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.description
+
 class Answer(models.Model):
     answer = models.TextField()
     correctness = models.BooleanField()
