@@ -4,11 +4,13 @@
 <div class="container-fluid">
     <div class="row">
         {%for category in categories%}
-        <div class="col-sm" id="category">
+        <div class="col-sm" style="margin-bottom: 20px">
         <div class="card" style="width: 18rem;">
-            <img class="card-img-top" src="{{category.image}}" alt="Card image cap">
+            {% with image=category.image %}
+            <img class="card-img-top" src="{{image|cut:'category/'}}" alt="Card image cap" style="height: 200px">
+            {% endwith %}
             <div class="card-body">
-                <h5 class="card-title">{{category.name | upper}}</h5>
+                <h5 class="card-title">{{category.name | upper | truncatechars:15}}</h5>
                 <p class="card-text">{{category.description | truncatechars:50}}</p>
                 <a href="{% url 'detail' category.id %}" class="btn btn-primary">Go</a>
             </div>

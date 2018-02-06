@@ -11,6 +11,7 @@ def index(request):
 def detail(request, category_id):
    try:
        category = Category.objects.get(pk=category_id)
+       print(category)
        tests = Test.objects.all().filter(category=category_id)
    except Category.DoesNotExist:
        raise Http404('Category does not exist')
