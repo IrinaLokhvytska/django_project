@@ -9,5 +9,14 @@ class Category(models.Model):
         return self.name
 
 class Test(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     title = models.CharField(max_length=30)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+class Question(models.Model):
+    description = models.TextField()
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+
+class Answer(models.Model):
+    answer = models.TextField()
+    correctness = models.BooleanField()
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)

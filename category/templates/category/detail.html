@@ -9,7 +9,7 @@
     {%if tests %}
     <div class="list-group">
         {%for test in tests%}
-        <a href="#" class="list-group-item list-group-item-action">{{test.title}}</a>
+        <a href="{% url 'quiz' test.id %}" class="list-group-item list-group-item-action">{{test.title}}</a>
         {%endfor%}
     </div>
     {% endif%}
