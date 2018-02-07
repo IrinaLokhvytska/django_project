@@ -28,3 +28,11 @@ def quiz(request, test_id):
            raise Http404('Answers do not exist')
        quiz.append({question.description: answers})
    return render (request, 'category/quiz.html', {'quiz': quiz})
+
+def appraisal(request):
+    correctness = 0
+    for i in range(1, 6):
+        i = str(i)
+        if Answer.objects.values('correctness').filter(pk=request.POST[i], correctness = True):
+            correctness +=1
+    return render (request, 'category/appraisal.html', {'score': correctness})

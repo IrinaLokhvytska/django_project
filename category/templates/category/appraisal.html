@@ -1,0 +1,21 @@
+{%extends "category/layout.html"%}
+{%block content%}
+{%if score %}
+<div class="container-fluid">
+    <div class="card text-center">
+        <div class="card-header">
+            Result of the quiz:
+        </div>
+        <div class="card-body">
+            {% if score > 3 %}
+            <h5 class="card-title">Congratulations! You passed the test.</h5>
+            {% else %}
+            <h5 class="card-title">Unfortunately, you did not pass the test.</h5>
+            {% endif %}
+            <p class="card-text">Your result: {{score}}</p>
+            <a href="{% url 'index' %}" class="btn btn-primary">Select category</a>
+        </div>
+    </div>
+</div>
+{% endif%}
+{%endblock%}

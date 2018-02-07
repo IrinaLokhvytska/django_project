@@ -2,8 +2,10 @@
 {%block content%}
 {%if quiz %}
 <div class="container-fluid">
-    <form>
+    <form action="{% url 'appraisal'%}" method="post">
+        {% csrf_token %}
         {%for element in quiz%}
+        {% with loop=forloop.counter %}
         {%for key, value in element.items%}
         <div class="form-group">
             <h3>{{ key }}</h3>
@@ -11,7 +13,7 @@
         <div class="form-group">
             {% for answer in value%}
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="{{answer.question}}" id="{{answer.id}}" value="option1">
+                <input class="form-check-input" type="radio" name="{{ loop }}" id="{{answer.id}}" value="{{answer.id}}">
                 <label class="form-check-label" for="{{answer.id}}">
                     {{ answer }}
                 </label>
@@ -19,6 +21,7 @@
             {%endfor%}
         </div>
         {%endfor%}
+        {%endwith%}
         {%endfor%}
         <button type="submit" class="btn btn-outline-dark">Submit</button>
     </form>
