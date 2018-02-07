@@ -16,9 +16,9 @@ def detail(request, category_id):
    return render (request, 'category/detail.html', {'category': category, 'tests': tests})
 
 def quiz(request, test_id):
-   quiz = {}
+   quiz = list()
    try:
-       questions = Question.objects.all().filter(test=test_id)
+       questions = Question.objects.all().filter(test=test_id).order_by('?')[:5]
    except Question.DoesNotExist:
        raise Http404('Questions do not exist')
    for question in questions:
@@ -26,5 +26,5 @@ def quiz(request, test_id):
            answers = Answer.objects.all().filter(question=question.id)
        except Answer.DoesNotExist:
            raise Http404('Answers do not exist')
-       quiz[question.description] = answers
+       quiz.append({question.description: answers})
    return render (request, 'category/quiz.html', {'quiz': quiz})
