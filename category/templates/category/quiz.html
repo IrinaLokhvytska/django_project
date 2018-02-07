@@ -3,13 +3,13 @@
 {%if quiz %}
 <div class="container-fluid">
     <form>
-        {%for element in quiz%}
+        {%for key in quiz%}
         <div class="form-group">
-            <h3>{{element.key }}</h3>
+            <h3>{{key }}</h3>
         </div>
         <div class="form-group">
-            <label for="formGroupExampleInput2">Answers:</label>
             <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Another input">
+            <p>{{ quiz }}</p>
         </div>
         {%endfor%}
     </form>
