@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Title of the example app</title>
+    <title>Brainstorm</title>
     {% load staticfiles %}
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css'%}" type="text/css">
     <script src="{% static 'js/bootstrap.min.js'%}"></script>
@@ -11,7 +11,6 @@
     <nav class="navbar navbar-dark bg-dark" style="margin-bottom: 30px">
         <a class="navbar-brand" href="{% url 'index' %}">BRAINSTORM</a>
     </nav>
-
     {%block content%}
     {%endblock%}
 </body>

@@ -3,8 +3,8 @@
 {%if quiz %}
 <div class="container-fluid">
     <form action="{% url 'appraisal'%}" method="post">
-        <input type="hidden" name="test_id" value="{{test_id}}">
         {% csrf_token %}
+        <input type="hidden" name="test_id" value="{{test_id}}">
         {%for element in quiz%}
         {% with loop=forloop.counter %}
         <input type="hidden" name="count" value="{{loop}}">
