@@ -26,7 +26,8 @@ def quiz(request, test_id):
            answers = Answer.objects.all().filter(question=question.id)
        except Answer.DoesNotExist:
            raise Http404('Answers do not exist')
-       quiz.append({question.description: answers})
+       if(answers):
+           quiz.append({question.description: answers})
    return render (request, 'category/quiz.html', {'quiz': quiz, 'test_id': test_id})
 
 def appraisal(request):
