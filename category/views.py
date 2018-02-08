@@ -18,16 +18,17 @@ def detail(request, category_id):
 def quiz(request, test_id):
    quiz = list()
    try:
-       questions = Question.objects.all().filter(test=test_id).order_by('?')[:7]
+       questions = Question.objects.all().filter(test=test_id).order_by('?')[:10]
    except Question.DoesNotExist:
        raise Http404('Questions do not exist')
-   for question in questions:
-       try:
-           answers = Answer.objects.all().filter(question=question.id)
-       except Answer.DoesNotExist:
-           raise Http404('Answers do not exist')
-       if answers and len(answers) > 1:
-           quiz.append({question.description: answers})
+   if questions and len(questions) == 10:
+       for question in questions:
+           try:
+               answers = Answer.objects.all().filter(question=question.id)
+           except Answer.DoesNotExist:
+               raise Http404('Answers do not exist')
+           if answers and len(answers) > 1:
+               quiz.append({question.description: answers})
    return render (request, 'category/quiz.html', {'quiz': quiz, 'test_id': test_id})
 
 def appraisal(request):
