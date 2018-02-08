@@ -3,12 +3,14 @@
 {%if quiz %}
 <div class="container-fluid">
     <form action="{% url 'appraisal'%}" method="post">
+        <input type="hidden" name="test_id" value="{{test_id}}">
         {% csrf_token %}
         {%for element in quiz%}
         {% with loop=forloop.counter %}
+        <input type="hidden" name="count" value="{{loop}}">
         {%for key, value in element.items%}
         <div class="form-group">
-            <h3>{{ key }}</h3>
+            <h6>{{ key }}</h6>
         </div>
         <div class="form-group">
             {% for answer in value%}

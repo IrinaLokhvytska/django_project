@@ -12,6 +12,9 @@ class Test(models.Model):
     title = models.CharField(max_length=30)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="Category")
 
+    def __str__(self):
+        return self.title
+
 class Question(models.Model):
     description = models.TextField()
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name="Test")

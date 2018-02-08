@@ -6,12 +6,16 @@
             Result of the quiz:
         </div>
         <div class="card-body">
-            {% if score > 3 %}
-            <h5 class="card-title">Congratulations! You passed the test.</h5>
+            {% if score > 75 %}
+            {%for element in test%}
+            <h5 class="card-title">Congratulations! You passed the {{element.title}} test.</h5>
+            {%endfor%}
             {% else %}
-            <h5 class="card-title">Unfortunately, you did not pass the test.</h5>
+            {%for element in test%}
+            <h5 class="card-title">Unfortunately, you did not pass the {{element.title}} test.</h5>
+            {%endfor%}
             {% endif %}
-            <p class="card-text">Your result: {{score}}</p>
+            <p class="card-text">Your result: {{score}} %</p>
             <a href="{% url 'index' %}" class="btn btn-primary">Select category</a>
         </div>
     </div>
