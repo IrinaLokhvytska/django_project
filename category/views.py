@@ -15,18 +15,26 @@ def detail(request, category_id):
        raise Http404('Category does not exist')
    return render (request, 'category/detail.html', {'category': category, 'tests': tests})
 
+def getQuestionsForQuiz(test_id):
+    try:
+        questions = Question.objects.all().filter(test=test_id).order_by('?')[:10]
+    except Question.DoesNotExist:
+        raise Http404('Questions do not exist')
+    return questions
+
+def getAnswersForQuestion(question_id):
+    try:
+        answers = Answer.objects.all().filter(question=question_id)
+    except Answer.DoesNotExist:
+        raise Http404('Answers do not exist')
+    return answers
+
 def quiz(request, test_id):
    quiz = list()
-   try:
-       questions = Question.objects.all().filter(test=test_id).order_by('?')[:10]
-   except Question.DoesNotExist:
-       raise Http404('Questions do not exist')
+   questions = getQuestionsForQuiz(test_id)
    if questions and len(questions) == 10:
        for question in questions:
-           try:
-               answers = Answer.objects.all().filter(question=question.id)
-           except Answer.DoesNotExist:
-               raise Http404('Answers do not exist')
+           answers = getAnswersForQuestion(question.id)
            if answers and len(answers) > 1:
                quiz.append({question.description: answers})
    return render (request, 'category/quiz.html', {'quiz': quiz, 'test_id': test_id})
