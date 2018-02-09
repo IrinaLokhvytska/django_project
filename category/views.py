@@ -1,5 +1,6 @@
-from django.shortcuts import render, render_to_response
-from django.contrib import auth, sessions
+from django.shortcuts import render
+from django.contrib import auth
+from django.contrib.auth.models import User
 from django.http import Http404, HttpResponseRedirect
 
 from . models import Category, Test, Question, Answer
@@ -17,6 +18,15 @@ def authenticate(request):
     user = auth.authenticate(username=username, password=password)
     if user is not None and user.is_active:
         auth.login(request, user)
+    return HttpResponseRedirect("/")
+
+def registration(request):
+    username = request.POST['registration_login']
+    password = request.POST['registration_password']
+    user = User.objects.create_user(username=username,password=password)
+    user.save()
+    authenticate = auth.authenticate(username=username, password=password)
+    auth.login(request, authenticate)
     return HttpResponseRedirect("/")
 
 def logout(request):
