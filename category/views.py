@@ -3,7 +3,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponseRedirect
 
-from . models import Category, Test, Question, Answer
+from . models import Category, Test, Question, Answer, UserTestsScore
 
 def index(request):
     if not request.user.is_authenticated:
@@ -68,10 +68,27 @@ def quiz(request, test_id):
 def appraisal(request):
     correctness = 0
     count = int(request.POST['count'])
+    user = request.user
     test = Test.objects.values('title').filter(pk=request.POST['test_id'])
     for i in range(1, count+1):
         i = str(i)
         if Answer.objects.values('correctness').filter(pk=request.POST[i], correctness = True):
             correctness += 1
     score = round(correctness/count * 100, 2)
+    saveScore(request.POST['test_id'], user, score)
     return render (request, 'category/appraisal.html', {'score': score, 'test': test})
+
+def saveScore(test_id, user, estimate):
+    estimation = {2: [0, 61], 3: [61, 74], 4: [74, 90], 5: [90, 100]}
+    for key, value in estimation.items():
+        if estimate in range (value[0], value[1]):
+            score = key
+    test = Test.objects.get(pk=test_id)
+    title = test.title
+    score = UserTestsScore(title=title, user=user, test=test, score=score, points=estimate)
+    score.save()
+
+def userTestsScore(request):
+    user = request.user.id
+    results = UserTestsScore.objects.all().filter(user=user)
+    return render (request, 'category/results.html', {'results': results,})
