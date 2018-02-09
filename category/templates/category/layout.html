@@ -16,6 +16,7 @@
             <li>
                 <a class="navbar-brand" href="{% url 'index' %}">BRAINSTORM</a>
             </li>
+            {% if user %}
             <li class="nav-item dropdown">
                 <div class="dropdown show">
                     <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -28,9 +29,10 @@
                     </div>
                 </div>
             </li>
+            {% endif %}
         </ul>
     </nav>
-    {%block content%}
-    {%endblock%}
+{%block content%}
+{%endblock%}
 </body>
 </html>

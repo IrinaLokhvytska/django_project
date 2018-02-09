@@ -6,10 +6,10 @@ from . models import Category, Test, Question, Answer
 
 def index(request):
     if not request.user.is_authenticated:
-        return render (request, 'category/authenticate.html')
+        return render (request, 'category/authenticate.html', {'user': False})
     else:
         categories = Category.objects.all()
-        return render (request, 'category/content.html', {'categories': categories})
+        return render (request, 'category/content.html', {'categories': categories, 'user': request.user})
 
 def authenticate(request):
     username = request.POST['username']
