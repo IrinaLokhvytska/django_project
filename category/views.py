@@ -1,19 +1,35 @@
-from django.shortcuts import render
-from django.http import Http404
+from django.shortcuts import render, render_to_response
+from django.contrib import auth, sessions
+from django.http import Http404, HttpResponseRedirect
 
 from . models import Category, Test, Question, Answer
 
 def index(request):
-   categories = Category.objects.all()
-   return render (request, 'category/content.html', {'categories': categories})
+    if not request.user.is_authenticated:
+        return render (request, 'category/authenticate.html')
+    else:
+        categories = Category.objects.all()
+        return render (request, 'category/content.html', {'categories': categories})
+
+def authenticate(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = auth.authenticate(username=username, password=password)
+    if user is not None and user.is_active:
+        auth.login(request, user)
+    return HttpResponseRedirect("/")
+
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect("/")
 
 def detail(request, category_id):
-   try:
-       category = Category.objects.get(pk=category_id)
-       tests = Test.objects.all().filter(category=category_id)
-   except Category.DoesNotExist:
-       raise Http404('Category does not exist')
-   return render (request, 'category/detail.html', {'category': category, 'tests': tests})
+    try:
+        category = Category.objects.get(pk=category_id)
+        tests = Test.objects.all().filter(category=category_id)
+    except Category.DoesNotExist:
+        raise Http404('Category does not exist')
+    return render (request, 'category/detail.html', {'category': category, 'tests': tests})
 
 def getQuestionsForQuiz(test_id):
     try:
@@ -30,14 +46,14 @@ def getAnswersForQuestion(question_id):
     return answers
 
 def quiz(request, test_id):
-   quiz = list()
-   questions = getQuestionsForQuiz(test_id)
-   if questions and len(questions) == 10:
-       for question in questions:
-           answers = getAnswersForQuestion(question.id)
-           if answers and len(answers) > 1:
-               quiz.append({question.description: answers})
-   return render (request, 'category/quiz.html', {'quiz': quiz, 'test_id': test_id})
+    quiz = list()
+    questions = getQuestionsForQuiz(test_id)
+    if questions and len(questions) == 10:
+        for question in questions:
+            answers = getAnswersForQuestion(question.id)
+            if answers and len(answers) > 1:
+                quiz.append({question.description: answers})
+    return render (request, 'category/quiz.html', {'quiz': quiz, 'test_id': test_id})
 
 def appraisal(request):
     correctness = 0
