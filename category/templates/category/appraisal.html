@@ -1,6 +1,7 @@
 {%extends "category/layout.html"%}
 {%block content%}
 <div class="container-fluid">
+    {% if score %}
     <div class="card text-center">
         <div class="card-header">
             Result of the quiz:
@@ -19,5 +20,6 @@
             <a href="{% url 'index' %}" class="btn btn-primary">Select category</a>
         </div>
     </div>
+    {% endif %}
 </div>
 {%endblock%}

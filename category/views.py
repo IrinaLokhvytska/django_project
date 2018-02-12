@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.contrib import auth
+from django.contrib import auth, sessions
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from . models import Category, Test, Question, Answer, UserTestsScore
 
@@ -34,19 +35,28 @@ def logout(request):
     return HttpResponseRedirect("/")
 
 def detail(request, category_id):
-    try:
-        category = Category.objects.get(pk=category_id)
-        tests = Test.objects.all().filter(category=category_id)
-    except Category.DoesNotExist:
-        raise Http404('Category does not exist')
-    return render (request, 'category/detail.html', {'category': category, 'tests': tests})
+    if not request.user.is_authenticated:
+        return render (request, 'category/authenticate.html', {'user': False})
+    else:
+        try:
+            category = Category.objects.get(pk=category_id)
+            tests = Test.objects.all().filter(category=category_id)
+        except Category.DoesNotExist:
+            raise Http404('Category does not exist')
+        return render (request, 'category/detail.html', {'category': category, 'tests': tests})
 
-def getQuestionsForQuiz(test_id):
+def getQuestionsForQuiz(request, test_id):
     try:
-        questions = Question.objects.all().filter(test=test_id).order_by('?')[:10]
+        questions = Question.objects.all().filter(test=test_id)[:10]
     except Question.DoesNotExist:
         raise Http404('Questions do not exist')
-    return questions
+    quiz = list()
+    if questions and len(questions) == 10:
+        for question in questions:
+            answers = getAnswersForQuestion(question.id)
+            if answers and len(answers) > 1:
+                quiz.append({question.description: answers})
+    return quiz
 
 def getAnswersForQuestion(question_id):
     try:
@@ -56,27 +66,28 @@ def getAnswersForQuestion(question_id):
     return answers
 
 def quiz(request, test_id):
-    quiz = list()
-    questions = getQuestionsForQuiz(test_id)
-    if questions and len(questions) == 10:
-        for question in questions:
-            answers = getAnswersForQuestion(question.id)
-            if answers and len(answers) > 1:
-                quiz.append({question.description: answers})
-    return render (request, 'category/quiz.html', {'quiz': quiz, 'test_id': test_id})
+    if not request.user.is_authenticated:
+        return render (request, 'category/authenticate.html', {'user': False})
+    else:
+        paginator = Paginator(getQuestionsForQuiz(request, test_id), 1)
+        page = request.GET.get('page')
+        quiz =  paginator.get_page(page)
+        return render (request, 'category/quiz.html', {'quiz': quiz, 'test_id': test_id})
 
 def appraisal(request):
-    correctness = 0
-    count = int(request.POST['count'])
-    user = request.user
-    test = Test.objects.values('title').filter(pk=request.POST['test_id'])
-    for i in range(1, count+1):
-        i = str(i)
-        if Answer.objects.values('correctness').filter(pk=request.POST[i], correctness = True):
-            correctness += 1
-    score = round(correctness/count * 100, 2)
-    saveScore(request.POST['test_id'], user, score)
-    return render (request, 'category/appraisal.html', {'score': score, 'test': test})
+    if not request.user.is_authenticated:
+        return render (request, 'category/authenticate.html', {'user': False})
+    else:
+        correctness = 0
+        count = int(request.POST['count'])
+        user = request.user
+        test = Test.objects.values('title').filter(pk=request.POST['test_id'])
+        for i in range(1, count+1):
+            if Answer.objects.values('correctness').filter(pk=request.POST[i], correctness = True):
+                correctness += 1
+        score = round(correctness/count * 100, 2)
+        saveScore(request.POST['test_id'], user, score)
+        return render (request, 'category/appraisal.html', {'score': score, 'test': test})
 
 def saveScore(test_id, user, estimate):
     estimation = {2: [0, 61], 3: [61, 74], 4: [74, 90], 5: [90, 100]}
@@ -89,6 +100,9 @@ def saveScore(test_id, user, estimate):
     score.save()
 
 def userTestsScore(request):
-    user = request.user.id
-    results = UserTestsScore.objects.all().filter(user=user)
-    return render (request, 'category/results.html', {'results': results,})
+    if not request.user.is_authenticated:
+        return render (request, 'category/authenticate.html', {'user': False})
+    else:
+        user = request.user.id
+        results = UserTestsScore.objects.all().filter(user=user)
+        return render (request, 'category/results.html', {'results': results,})

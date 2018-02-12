@@ -4,32 +4,58 @@
 <div class="container-fluid">
     <form action="{% url 'appraisal'%}" method="post">
         {% csrf_token %}
-        <input type="hidden" name="test_id" value="{{test_id}}">
-        {%for element in quiz%}
-        {% with loop=forloop.counter %}
-        <input type="hidden" name="count" value="{{loop}}">
-        {%for key, value in element.items%}
-        <div class="form-group">
-            <h6>{{ key }}</h6>
-        </div>
-        <div class="form-group">
-            {% for answer in value%}
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="{{ loop }}" id="{{answer.id}}" value="{{answer.id}}" required>
-                <label class="form-check-label" for="{{answer.id}}">
-                    {{ answer }}
-                </label>
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="card">
+                    <div class="card-body">
+                        <input type="hidden" name="test_id" value="{{test_id}}">
+                        {%for element in quiz%}
+                        <input type="hidden" name="count" value="{{quiz.number}}">
+                        {%for key, value in element.items%}
+                        <div class="form-group">
+                            <h6>{{ key }}</h6>
+                        </div>
+                        <div class="form-group">
+                            {% for answer in value%}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="{{ quiz.number }}" id="{{answer.id}}" value="{{answer.id}}" required>
+                                <label class="form-check-label" for="{{answer.id}}">
+                                {{ answer }}
+                                </label>
+                            </div>
+                            {%endfor%}
+                        </div>
+                        {%endfor%}
+                        {%endfor%}
+                        <div class="row">
+                        <div class="col-sm-4">
+                            {% if quiz.has_previous %}
+                            <a class="btn btn-dark question_button" href="?page={{ quiz.previous_page_number }}">Previous</a>
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-4">
+                            {% if quiz.has_next %}
+                            <a class="btn btn-dark question_button" href="?page={{ quiz.next_page_number }}">Next</a>
+                            {% endif %}
+                        </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            {%endfor%}
+            <div class="col-sm-4">
+                <div class="btn-toolbar justify-content-between" role="toolbar">
+                    <div class="btn-group" role="group">
+                    {% for page in quiz.paginator.page_range %}
+                    <a id="pagination" class="badge badge-dark" href="?page={{page}}">{{page}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-outline-dark" id="quiz_button">Submit</button>
+            </div>
         </div>
-        {%endfor%}
-        {%endwith%}
-        {%endfor%}
-        <button type="submit" class="btn btn-outline-dark">Submit</button>
     </form>
-</div>
 {% else %}
-<div class="container-fluid">
     <div class="card text-center">
         <div class="card-header">
             This test is not available for now.
@@ -38,6 +64,6 @@
             <a href="{% url 'index' %}" class="btn btn-primary">Select category</a>
         </div>
     </div>
-</div>
 {% endif%}
+</div>
 {%endblock%}
