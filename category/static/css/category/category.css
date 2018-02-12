@@ -1,0 +1,49 @@
+#pagination {
+    width: 30px;
+}
+
+#header {
+    margin-bottom: 30px
+}
+
+#authenticate {
+    margin: 10%
+}
+
+#authenticate_button {
+    text-align: center
+}
+
+#category_block {
+    margin-bottom: 20px
+}
+
+#quiz_button {
+    width: 300px;
+}
+
+.question_button {
+    width: 100px;
+}
+
+.logo {
+    height: 50px;
+    width: 130px
+}
+
+.card-img-top {
+    height: 200px
+}
+
+.navbar {
+    padding: 0 20px ;
+}
+
+.btn-secondary {
+    background-color: #343a40!important;
+    border-color: #343a40!important;
+}
+
+.appraisal_button {
+    width: 200px;
+}
