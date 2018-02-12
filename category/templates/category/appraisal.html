@@ -17,7 +17,8 @@
             {%endfor%}
             {% endif %}
             <p class="card-text">Your result: {{score}} %</p>
-            <a href="{% url 'index' %}" class="btn btn-primary">Select category</a>
+            <a href="{% url 'index' %}" class="btn btn-dark appraisal_button">Select category</a>
+            <a href="{% url 'result' %}" class="btn btn-dark appraisal_button">Show results</a>
         </div>
     </div>
     {% endif %}

@@ -47,7 +47,7 @@ def detail(request, category_id):
 
 def getQuestionsForQuiz(request, test_id):
     try:
-        questions = Question.objects.all().filter(test=test_id)[:10]
+        questions = Question.objects.all().filter(test=test_id).order_by('?')[:10]
     except Question.DoesNotExist:
         raise Http404('Questions do not exist')
     quiz = list()
@@ -69,25 +69,49 @@ def quiz(request, test_id):
     if not request.user.is_authenticated:
         return render (request, 'category/authenticate.html', {'user': False})
     else:
-        paginator = Paginator(getQuestionsForQuiz(request, test_id), 1)
-        page = request.GET.get('page')
-        quiz =  paginator.get_page(page)
+        quiz =  getQuestionsForQuiz(request, test_id)
         return render (request, 'category/quiz.html', {'quiz': quiz, 'test_id': test_id})
 
 def appraisal(request):
-    if not request.user.is_authenticated:
-        return render (request, 'category/authenticate.html', {'user': False})
-    else:
-        correctness = 0
-        count = int(request.POST['count'])
-        user = request.user
-        test = Test.objects.values('title').filter(pk=request.POST['test_id'])
-        for i in range(1, count+1):
-            if Answer.objects.values('correctness').filter(pk=request.POST[i], correctness = True):
-                correctness += 1
-        score = round(correctness/count * 100, 2)
-        saveScore(request.POST['test_id'], user, score)
-        return render (request, 'category/appraisal.html', {'score': score, 'test': test})
+    correctness = 0
+    correct_answers = list()
+    wrong_answers = list()
+    count = int(request.POST['count'])
+    user = request.user
+    test = Test.objects.values('title').filter(pk=request.POST['test_id'])
+    for i in range(1, count+1):
+        i = str(i)
+        if Answer.objects.values('correctness').filter(pk=request.POST[i], correctness = True):
+           correct_answers.append(request.POST[i])
+           correctness += 1
+        else:
+           wrong_answers.append(request.POST[i])
+    score = round(correctness/count * 100, 2)
+    saveScore(request.POST['test_id'], user, score)
+    request.session['correct_answers'] = correct_answers
+    request.session['wrong_answers'] = wrong_answers
+    return render (request, 'category/appraisal.html', {'score': score, 'test': test})
+
+def getResults(request):
+    result = list()
+    correct_answers = request.session['correct_answers']
+    wrong_answers = request.session['wrong_answers']
+    for i in correct_answers:
+        questions = Answer.objects.values('question').filter(pk=i)
+        for value in questions:
+            question = Question.objects.get(pk=value['question'])
+            answers = Answer.objects.all().filter(question=value['question'])
+            result.append({(question.description, True): answers})
+    for i in wrong_answers:
+        questions = Answer.objects.values('question').filter(pk=i)
+        for value in questions:
+            question = Question.objects.get(pk=value['question'])
+            answers = Answer.objects.all().filter(question=value['question'])
+            result.append({(question.description, False): answers})
+    paginator = Paginator(result, 1)
+    page = request.GET.get('page')
+    result =  paginator.get_page(page)
+    return render (request, 'category/answers.html', {'result': result})
 
 def saveScore(test_id, user, estimate):
     estimation = {2: [0, 61], 3: [61, 74], 4: [74, 90], 5: [90, 100]}

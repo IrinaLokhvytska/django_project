@@ -1,0 +1,42 @@
+{%extends "category/layout.html"%}
+{%block content%}
+<div class="container-fluid">
+    {% if result %}
+    {% for element in result%}
+    {% for  questions, answers in element.items%}
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="form-check">
+                            {% if questions.1%}
+                            <span class="badge badge-success"><h6>{{questions.0}}</h6></span>
+                            {% else %}
+                            <span class="badge badge-danger"><h6>{{questions.0}}</h6></span>
+                            {% endif %}
+                            <ul class="list-group">
+                            {% for answer in answers%}
+                                <li class="list-group-item">{{answer}}</li>
+                            {%endfor%}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="btn-toolbar justify-content-between" role="toolbar">
+                <div class="btn-group" role="group">
+                    {% for page in result.paginator.page_range %}
+                    <a id="pagination" class="badge badge-dark" href="?page={{page}}">{{page}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+        {%endfor%}
+        {% endif %}
+    </div>
+</div>
+{%endblock%}
